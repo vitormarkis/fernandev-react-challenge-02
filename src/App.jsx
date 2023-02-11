@@ -1,7 +1,7 @@
-import { login } from './utils';
-import './index.css';
-import { useState } from 'react';
+import { useEffect, useState } from "react"
+import "./index.css"
 
+import { login } from './utils'
 // Instruções:
 // * Você tem um formulário de login INCOMPLETO
 // * Não é permitido adicionar novos elementos HTML
@@ -15,25 +15,65 @@ import { useState } from 'react';
 // todo - Mostre um alerta caso o login seja efetuado com sucesso (javascript alert). Investigue a função login() para entender como ter sucesso na requisição.
 
 export default function LoginForm() {
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState(false);
+
+  const isSubmitAvailable = 
+    email !== '' && 
+    password.length > 5 && 
+    !isSubmitting
+
+  async function handleSubmit(event) {
+    event.preventDefault()
+    try {
+      setSubmitError(false)
+      setIsSubmitting(true)
+      const response = await login({email, password})
+      alert(response)
+    } catch (error) {
+      setSubmitError(error)
+    }
+    setIsSubmitting(false)
+  }
+
   return (
-    <div className='wrapper'>
-      <div className='login-form'>
+    <form className="wrapper" onSubmit={handleSubmit}>
+      <div className="login-form">
         <h1>Login Form 🐞</h1>
         {/* Coloque a mensagem de erro de login na div abaixo. Mostre a div somente se houver uma mensagem de erro. */}
-        <div className='errorMessage'></div>
-        <div className='row'>
-          <label htmlFor={'email'}>Email</label>
-          <input id={'email'} type={'email'} autoComplete='off' />
+        {submitError && (
+        <div className="errorMessage">
+          <p>{submitError.message}</p>
         </div>
-        <div className='row'>
-          <label htmlFor={'password'}>Password</label>
-          <input id={'password'} type={'password'} />
+        )}
+        <div className="row">
+          <label htmlFor={"email"}>Email</label>
+          <input
+            onChange={(e) => setEmail(e.target.value)}
+            value={email}
+            id={"email"}
+            type={"email"}
+            autoComplete="off"
+          />
+        </div>
+        <div className="row">
+          <label htmlFor={"password"}>Password</label>
+          <input
+            onChange={(e) => setPassword(e.target.value)}
+            value={password}
+            id={"password"}
+            type={"password"}
+          />
         </div>
 
-        <div className='button'>
-          <button>Login</button>
+        <div className="button">
+          <button type="submit" disabled={!isSubmitAvailable}>
+            {isSubmitting ? 'Enviando...' : 'Login'}
+          </button>
         </div>
       </div>
-    </div>
-  );
+    </form>
+  )
 }

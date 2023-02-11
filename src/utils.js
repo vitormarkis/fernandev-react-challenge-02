@@ -4,7 +4,7 @@ export function login({ email, password }) {
   return new Promise((resolve, reject) => {
     setTimeout(function () {
       if (password === 'password123' && !!email) {
-        resolve();
+        resolve('Usuário logado!');
       } else {
         reject({ message: 'e-mail or password wrong.' });
       }
